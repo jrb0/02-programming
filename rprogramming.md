@@ -34,7 +34,7 @@ alt="Hadley et al, R for Data Science" />
 Science</figcaption>
 </figure>
 
-&nbsp!
+ 
 
 You need a dedicated project folder to manage the many inputs and
 outputs that come with this cycle. The project (`.Rproj`) and associated
