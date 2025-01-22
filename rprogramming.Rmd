@@ -20,7 +20,7 @@ output:
 
 Dive into the world of data analysis projects using R. For those with a background in R, use this as an opportunity to get new perspective on familiar functions, object structures, and more. For those without the background, try to think about the operations below in terms of syntax and function rather than as a fixed set of routines to memorize.
 
-Note that I use generic object and element names wherever possible. For example, `summary(my_data$var1)` refers to a generic object, `mydata` with a column named `var1`.
+Note that I use generic object and element names wherever possible. For example, `summary(mydata$var1)` refers to a generic object, `mydata` that contains a column named `var1`.
 
 ## Workflow and projects
 Data analytic work has a life cycle that goes well beyond how we think about class notes or a single problem set. I really like Hadley et al.'s depiction of the data science project:
@@ -60,10 +60,10 @@ The world of R grows and evolves through user-written packages (similar to how "
 
 
 ## Function basics
-R packages contain a library of functions. A function is a pre-defined routine to perform some task. For example, the command `count` calls a `dplyr` function that tallies the unique values that appear in one or more variables.
+R packages contain a library of functions. A function is a pre-defined routine to perform some task. For example, the command `count` calls a `dplyr` function that tallies the unique values that appear in one or more variables of a data frame or vector.
 
 Functions have three main parts: 
-- Name: how to call the function (e.g., `count` or `summary`).  
+- Name: how to call the function into action (e.g., `count` or `summary`).  
 - Arguments: the inputs required for the function to work. For example, `kable` requires an object that you want to format as a table: `knitr::kable(x)` where `x` is your data frame.  
 - Body: the code that defines what the function does.
 
@@ -87,10 +87,10 @@ How do you input data in R? R can read in an incredible array of data types. Sim
 # Import an R object (data, list, etc)
   load('file.RData')
   
-# Other inputs (must input as a new object)
-  df1 = read_csv(file = 'file.csv', na = c("",".")) # note the na option
-  df2 = readxl::read_excel(file = 'file.xlsx')
-  df3 = haven::read_dta(file = 'file.dta')
+# Other formats (must input as a new object)
+  df1 <- read_csv(file = 'file.csv', na = c("",".")) # note the na option
+  df2 <- readxl::read_excel(file = 'file.xlsx')
+  df3 <- haven::read_dta(file = 'file.dta')
 ```
 
 Don't forget about outputting, or saving, the data too. Write it to your preferred format. I recommend saving in `.RData` format for yourself and `.csv` format if you intend to distribute the data for public use.[^2]
@@ -118,7 +118,7 @@ What to do with non-numeric variables? Start with a relative frequency table and
 
 ```{r facs}
 # Initial Tabulation
-  mytab = 
+  mytab <- 
     mydata %>%
     count(var_name) %>%
     mutate(percent = 100 * n / sum(n))
@@ -134,18 +134,18 @@ What to do with non-numeric variables? Start with a relative frequency table and
 ```
 
 ### Numeric and integer variables  
-Get those summary statistics and make another picture. Notice the flexibility of `summarise` versus a quicker but inflexible call to `summary`. 
+Get those summary statistics and make a picture. Notice the flexibility of `summarise` versus a quicker but inflexible call to `summary`. 
 
 ```{r nums}
 # Summary stats
-  summary(mydata['var.name']) # or summary(mydata$var.name)
+  summary(data['var']) # or summary(data$var)
   
-  mydata %>%
-    summarise( # customize summary stats
-      stat1 = some_function(var1),
-      mean2 = mean(var2),
-      sd2 = sd(var2),
-      meanDiff = mean(var1) - mean(var1),
+  data %>%
+    summarise(
+      stat1 <- some_function(var1),
+      mean2 <- mean(var2),
+      sd2 <- sd(var2),
+      meanDiff <- mean(var1) - mean(var1),
     )
 
 # Plot the distribution    
@@ -157,12 +157,12 @@ Get those summary statistics and make another picture. Notice the flexibility of
 
 
 ## Understanding R objects
-R is an Object Oriented Language (OOL), and objects hold primary importance in the way we write and execute code. If you want to store information/data in memory (rather than just print it out in the console), you have to store it in a named object. If you want to call on or use stored information, you have to call the object by name. As a matter of style: keep names short, intuitive, and free of spaces.[^3]
+R is an Object Oriented Language (OOL), and objects hold primary importance in the way we write and execute code. If you want to store information/data in memory (rather than just print it out in the console), you have to store it in a named (or assigned) object. Note that `<-` is called the assignment operator. If you want to call on or use stored information, you have to call the object by name. As a matter of style: keep names short, intuitive, and free of spaces.[^3]
 
 ```{r obcomp}
 # Compare:
   1:5
-  obj1 = 1:5
+  obj1 <- 1:5
   obj1
 ```
 
@@ -170,38 +170,42 @@ Objects come in many flavors: vectors, matrices, data frames, lists, and more. O
 
 ```{r obs1}
 # Vectors/values:
-  a = 1:10
-  b = rnorm(10)
-  c = letters[1:10]
-  d = a >= 4
+  a <- 1:10
+  b <- rnorm(10)
+  c <- letters[1:10]
+  d <- a >= 4
 
 # Data frames/tibbles
-  df1 = data.frame(a, b, c, d)
-  df2 = tibble(d, a, b) # requires tidyverse
+  df1 <- data.frame(a, b, c, d)
+  df2 <- tibble(d, a, b) # requires tidyverse
 
 # Lists
-  l1 = list(item1 = df1, item2 = df2)
+  l1 <- list(
+    item1 = df1, 
+    item2 = df2
+  )
 ```
 
-Run the code in the blob above and then check the properties of each object you created using `is()`. For example, note that `is(l1)` returns `"list"` and `"vector"`.
+Run the code in the blob above and then check the properties of each object you created using `is()`. For example, note that `is(l1)` returns `list` and `vector`.
 
-How do you reference or index information stored in an object? For example, you want to calculate the mean of `var_1` within `my_data`. R is very rectangular in its thinking about objects: they are `n` rows long and/or `k` columns wide.[^4] A `tibble` recording grades for fifteen students on four problem sets is a 15x4 rectangular object. A `list` of 2 `tibbles` and a `vector` is a 3x1 list.  If you know this, you can access information with reference to it's location in the rectangle.
+How do you index or extract information stored in an object? For example, you want to calculate the mean of `var1` within `mydata`. R is very rectangular in its thinking about objects: they are `n` rows long and/or `k` columns wide.[^4] A `tibble` is an `n x k` rectangular structure. A `tibble` recording grades for fifteen students on four problem sets is a 15x4 rectangular object. A `list` of 2 `tibbles` and a `vector` is a 3x1 list.  If you know this, you can access information with reference to it's location in the rectangle. There are three main indexing operators:
 
-Notice below the difference between extraction and subsetting. Pay special attention to the different use of quotations for variable names as well as the type of object each operation creates.
+- `[` subsets an object and returns an object of the same class.  
+- `[[` *extracts* elements of list or object
+- `$` *extracts* elements by literal name
+
+Notice the difference between extraction and subsetting. Pay special attention to the different use of quotations for variable names as well as the type of object each operation creates.
 
 ```{r obs2}
 # Extract an item from list or frame
   object$element
   object[['element']]
-  object |> 
-    pull(item)
   
 # Subset an element (maintains orig structure)
-  object[row_num, var_num] #defaults to object[var_num]
+  object[1:30, 4:5] # object[rows, columns]; defaults to object[column]
   object['var_name'] # use quotes to call by name
-  object[1:30, 4:5] # select rows 1-30, variables 4-5
-  object |>
-    select(var1, var2, var3) |>
+  object %>%
+    select(var1, var2, var3) %>%
     filter(criterion)
 ```
 
@@ -210,25 +214,24 @@ Pipes are awesome. The base R pipe, `|>`, and `magrittr` pipe, `%>%`, push the o
 
 ```{r piping}
 # with pipes
-  p1 =
-    mydata %>% # start with my data
+  mydata %>% # start with my data
     filter(group == 'A') %>%
-    count(var1) |> # tabulate scores on var1
+    count(var1) %>% 
     mutate(percent = 100 * n / sum(n)) %>% # add a percent column
     ggplot(aes(x = var1, y = percent)) +
     geom_col()
 
 # Without a pipe
-  d1 = filter(.data = mydata, group == 'A')
-  d2 = count(x = d1, var1)
-  d3 = mutate(.data = d2, percent = 100 * n / sum(n))
-  p1 = ggplot(data = d3, aes(x = var1, y = percent)) + 
+  d1 <- filter(.data = mydata, group == 'A')
+  d2 <- count(x = d1, var1)
+  d3 <- mutate(.data = d2, percent = 100 * n / sum(n))
+  ggplot(data = d3, aes(x = var1, y = percent)) + 
     geom_col()
     
   rm(d1,d2,d3)
 ```
 
-Notice in comparing these sequences where the "piped" output fits in the next code segment. For example, `count(x = mydata, var1)` becomes `mydata %>% count(x = ., var1)` where `mydata` flows directly into `.`, which serves here as an explicit placeholder for the input from a prior operation. You can simplify to `mydata %>% count(var1)`.
+Notice where the "piped" output from the first or left-hand side of the chunk fits into the next (righ-hand side) code segment. For example, `count(x = mydata, var1)` becomes `mydata %>% count(x = ., var1)` where `mydata` flows directly into `.`, an explicit placeholder for the input from a prior operation. You can simplify to `mydata %>% count(var1)`.
 
 
 [^1]: Attaching is great for packages you want to use repeatedly (e.g., `tidyverse`). The `::` operator is excellent for something you may only use once (e.g., `haven::read_dta()`).
