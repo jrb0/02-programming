@@ -86,11 +86,13 @@ routine to perform some task. For example, the command `count` calls a
 `dplyr` function that tallies the unique values that appear in one or
 more variables of a data frame or vector.
 
-Functions have three main parts: - Name: how to call the function into
-action (e.g., `count` or `summary`).  
+Functions have three main parts:
+
+- Name: how to call the function into action (e.g., `count` or
+  `summary`).  
 - Arguments: the inputs required for the function to work. For example,
-`kable` requires an object that you want to format as a table:
-`knitr::kable(x)` where `x` is your data frame.  
+  `kable` requires an object that you want to format as a table:
+  `knitr::kable(x)` where `x` is your data frame.  
 - Body: the code that defines what the function does.
 
 ``` r
